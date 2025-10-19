@@ -23,50 +23,50 @@
               <h4>Значение Х</h4>
               <div class="param-group">
                 <div class="param-checkbox">
-                  <input id="x-2" type="checkbox" name="x-input">
+                  <input value="-2" id="x-2" type="checkbox" name="x-input">
                   <label for="x-2">-2</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x-1.5" type="checkbox" name="x-input">
+                  <input value="-1.5" id="x-1.5" type="checkbox" name="x-input">
                   <label for="x-1.5">-1.5</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x-1" type="checkbox" name="x-input">
+                  <input value="-1" id="x-1" type="checkbox" name="x-input">
                   <label for="x-1">-1</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x-0.5" type="checkbox" name="x-input">
+                  <input value="-0.5" id="x-0.5" type="checkbox" name="x-input">
                   <label for="x-0.5">-0.5</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x0" type="checkbox" name="x-input">
+                  <input value="0" id="x0" type="checkbox" name="x-input">
                   <label for="x0">0</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x0.5" type="checkbox" name="x-input">
+                  <input value="0.5" id="x0.5" type="checkbox" name="x-input">
                   <label for="x0.5">0.5</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x1" type="checkbox" name="x-input">
+                  <input value="1" id="x1" type="checkbox" name="x-input">
                   <label for="x1">1</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x1.5" type="checkbox" name="x-input">
+                  <input value="1.5" id="x1.5" type="checkbox" name="x-input">
                   <label for="x1.5">1.5</label>
                 </div>
                 <div class="param-checkbox">
-                  <input id="x2" type="checkbox" name="x-input">
+                  <input value="2" id="x2" type="checkbox" name="x-input">
                   <label for="x2">2</label>
                 </div>
               </div>
-              <p class="error-text"></p>
+              <p id="x-error" class="error-text"></p>
             </div>
             <div class="input-block">
               <div class="param-text">
                 <label for="y">Значение Y</label>
                 <input id="y" min="-3" max="3" type="number" required name="y-input">
               </div>
-              <p class="error-text"></p>
+              <p id="y-error" class="error-text"></p>
             </div>
             <div class="input-block">
               <div class="param-select">
@@ -79,7 +79,7 @@
                   <option value="5" selected>5</option>
                 </select>
               </div>
-              <p class="error-text"></p>
+              <p id="r-error" class="error-text"></p>
             </div>
             <input class="param-submit" type="submit" value="Отправить">
           </form>
@@ -87,5 +87,6 @@
         <div class="table"></div>
       </div>
     </main>
+    <script src="${pageContext.request.contextPath}/js/main.js"></script>
   </body>
 </html>
