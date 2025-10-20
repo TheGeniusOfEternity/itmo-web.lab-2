@@ -4,9 +4,23 @@ import jakarta.servlet.annotation.WebServlet
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpSession
 import java.io.PrintWriter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.pow
-
+data class ShotResult(
+    val x: Float?,
+    val y: Float?,
+    val r: Float?,
+    val isHit: Boolean?,
+    val timestamp: LocalDateTime = LocalDateTime.now()
+) {
+    fun getFormattedTimestamp(): String {
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        return timestamp.format(formatter)
+    }
+}
 
 @WebServlet(name = "AreaCheckServlet", urlPatterns = ["/area-check"])
 class AreaCheckModel: HttpServlet() {
@@ -57,7 +71,37 @@ class AreaCheckModel: HttpServlet() {
         val y = request.getParameter("y")?.toFloatOrNull()
         val r = request.getParameter("r")?.toFloatOrNull()
         val isHit = validate(x, y, r)
-
+        saveResult(request.session, x, y, r, isHit)
         sendHtml(x, y, r, isHit)
+    }
+
+    private fun saveResult(session: HttpSession, x: Float?, y: Float?, r: Float?, isHit: Boolean?) {
+        val result = ShotResult(x, y, r, isHit, LocalDateTime.now())
+        val sessionId = session.id
+
+        // Получаем или создаем Map для хранения результатов всех пользователей
+        val context = servletContext
+        var allUsersResults = context.getAttribute("allUsersShotResults") as? MutableMap<String, MutableList<ShotResult>>
+
+        if (allUsersResults == null) {
+            allUsersResults = mutableMapOf()
+            context.setAttribute("allUsersShotResults", allUsersResults)
+        }
+
+        // Получаем или создаем список результатов для конкретного пользователя
+        var userResults = allUsersResults[sessionId]
+        if (userResults == null) {
+            userResults = mutableListOf()
+            allUsersResults[sessionId] = userResults
+        }
+
+        // Добавляем новый результат (ограничиваем количество, например, последние 20)
+        userResults.add(result)
+        if (userResults.size > 20) {
+            userResults.removeAt(0)
+        }
+
+        // Также сохраняем ID сессии в саму сессию для удобства доступа в JSP
+        session.setAttribute("userSessionId", sessionId)
     }
 }
