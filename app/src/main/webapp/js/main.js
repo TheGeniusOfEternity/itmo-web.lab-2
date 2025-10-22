@@ -123,17 +123,17 @@ const addCircle = (x, y) => {
 }
 
 const validate = (x, y, r) => {
-  if (!x || isNaN(parseInt(x)))
+  if (!Number.isFinite(Number(r)))
     return {
       input: "x",
       text: "Параметр х не является числом"
     }
-  if (!y || isNaN(parseInt(y)))
+  if (!Number.isFinite(Number(r)))
     return {
       input: "y",
       text: "Параметр y не является числом"
     }
-  if (!r || isNaN(parseInt(r)))
+  if (!Number.isFinite(Number(r)))
     return {
       input: "r",
       text: "Параметр r не является числом"
