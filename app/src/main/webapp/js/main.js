@@ -65,12 +65,15 @@ const sendRequest = () => {
   switch (errorText.input) {
     case "x":
       xErrorText.innerHTML = errorText.text
+      xErrorText.classList.add("show")
       break
     case "y":
       yErrorText.innerHTML = errorText.text
+      yErrorText.classList.add("show")
       break
     case "r":
       rErrorText.innerHTML = errorText.text
+      rErrorText.classList.add("show")
       break
     default:
       const params = new URLSearchParams({

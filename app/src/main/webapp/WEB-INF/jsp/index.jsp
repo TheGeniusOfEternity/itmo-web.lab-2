@@ -16,6 +16,46 @@
       <h3>Вар №56375</h3>
     </header>
     <main>
+      <div class="table">
+        <%
+          // Получаем ID сессии текущего пользователя
+          String userSessionId = (String) session.getAttribute("userSessionId");
+          Map<String, List<ShotResult>> allUsersResults =
+                  (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
+
+          List<ShotResult> userResults = null;
+          if (userSessionId != null && allUsersResults != null) {
+            userResults = allUsersResults.get(userSessionId);
+          }
+        %>
+        <% if (userResults != null && !userResults.isEmpty()) { %>
+        <table>
+          <thead>
+          <tr>
+            <th>X</th>
+            <th>Y</th>
+            <th>R</th>
+            <th>Результат</th>
+            <th>Время</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for (ShotResult result : userResults) { %>
+          <tr class="<%= result.isHit() != null && Boolean.TRUE.equals(result.isHit()) ? "hit" : "miss" %>">
+            <td><%= result.getX() %></td>
+            <td><%= result.getY() %></td>
+            <td><%= result.getR() %></td>
+            <td><%=
+            result.isHit() == null ? "Невозможно определить" :
+                    Boolean.TRUE.equals(result.isHit()) ? "Попадание" : "Промах"
+            %></td>
+            <td><%= result.getFormattedTimestamp() %></td>
+          </tr>
+          <% } %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">
           <polygon points="30,150 150,150 150,30" fill="#b8c0ff"></polygon>
@@ -64,61 +104,65 @@
           <text y="140" x="265" font-size="16" fill="black">R</text>
         </svg>
       </div>
-      <div class="sidebar">
-        <div class="form">
-          <form id="form">
-            <div class="input-block">
-              <h4>Значение Х</h4>
-              <div class="param-group">
-                <div class="param-checkbox">
-                  <input value="-2" id="x-2" type="checkbox" name="x-input" checked>
-                  <label for="x-2">-2</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="-1.5" id="x-1.5" type="checkbox" name="x-input">
-                  <label for="x-1.5">-1.5</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="-1" id="x-1" type="checkbox" name="x-input">
-                  <label for="x-1">-1</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="-0.5" id="x-0.5" type="checkbox" name="x-input">
-                  <label for="x-0.5">-0.5</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="0" id="x0" type="checkbox" name="x-input">
-                  <label for="x0">0</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="0.5" id="x0.5" type="checkbox" name="x-input">
-                  <label for="x0.5">0.5</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="1" id="x1" type="checkbox" name="x-input">
-                  <label for="x1">1</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="1.5" id="x1.5" type="checkbox" name="x-input">
-                  <label for="x1.5">1.5</label>
-                </div>
-                <div class="param-checkbox">
-                  <input value="2" id="x2" type="checkbox" name="x-input">
-                  <label for="x2">2</label>
-                </div>
+      <div class="form">
+        <form id="form">
+          <div class="input-block">
+            <h4>Значение Х</h4>
+            <div class="param-group">
+              <div class="param-checkbox">
+                <input value="-2" id="x-2" type="checkbox" name="x-input" checked>
+                <label for="x-2">-2</label>
               </div>
-              <p id="x-error" class="error-text"></p>
-            </div>
-            <div class="input-block">
-              <div class="param-text">
-                <label for="y">Значение Y</label>
-                <input id="y" value="0" required name="y-input">
+              <div class="param-checkbox">
+                <input value="-1.5" id="x-1.5" type="checkbox" name="x-input">
+                <label for="x-1.5">-1.5</label>
               </div>
-              <p id="y-error" class="error-text"></p>
+              <div class="param-checkbox">
+                <input value="-1" id="x-1" type="checkbox" name="x-input">
+                <label for="x-1">-1</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="-0.5" id="x-0.5" type="checkbox" name="x-input">
+                <label for="x-0.5">-0.5</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="0" id="x0" type="checkbox" name="x-input">
+                <label for="x0">0</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="0.5" id="x0.5" type="checkbox" name="x-input">
+                <label for="x0.5">0.5</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="1" id="x1" type="checkbox" name="x-input">
+                <label for="x1">1</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="1.5" id="x1.5" type="checkbox" name="x-input">
+                <label for="x1.5">1.5</label>
+              </div>
+              <div class="param-checkbox">
+                <input value="2" id="x2" type="checkbox" name="x-input">
+                <label for="x2">2</label>
+              </div>
             </div>
-            <div class="input-block">
-              <div class="param-select">
-                <label for="r">Значение R</label>
+            <p id="x-error" class="error-text"></p>
+          </div>
+          <div class="input-block">
+            <div class="param-text">
+              <label for="y">Значение Y</label>
+              <input id="y" value="0" required name="y-input">
+            </div>
+            <p id="y-error" class="error-text"></p>
+          </div>
+          <div class="input-block">
+            <div class="param-select">
+              <label for="r">Значение R</label>
+              <div class="wrapper">
+                <?xml version="1.0" encoding="utf-8"?>
+                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 4.29289C12.3166 3.90237 11.6834 3.90237 11.2929 4.29289L7.29289 8.29289C6.90237 8.68342 6.90237 9.31658 7.29289 9.70711C7.68342 10.0976 8.31658 10.0976 8.70711 9.70711L12 6.41421L15.2929 9.70711C15.6834 10.0976 16.3166 10.0976 16.7071 9.70711C17.0976 9.31658 17.0976 8.68342 16.7071 8.29289L12.7071 4.29289ZM7.29289 15.7071L11.2929 19.7071C11.6834 20.0976 12.3166 20.0976 12.7071 19.7071L16.7071 15.7071C17.0976 15.3166 17.0976 14.6834 16.7071 14.2929C16.3166 13.9024 15.6834 13.9024 15.2929 14.2929L12 17.5858L8.70711 14.2929C8.31658 13.9024 7.68342 13.9024 7.29289 14.2929C6.90237 14.6834 6.90237 15.3166 7.29289 15.7071Z" fill="#000000"></path>
+                </svg>
                 <select required name="r-input" id="r">
                   <option value="1" selected>1</option>
                   <option value="2">2</option>
@@ -127,51 +171,11 @@
                   <option value="5">5</option>
                 </select>
               </div>
-              <p id="r-error" class="error-text"></p>
             </div>
-            <input class="param-submit" type="submit" value="Отправить">
-          </form>
-        </div>
-        <div class="table">
-          <%
-            // Получаем ID сессии текущего пользователя
-            String userSessionId = (String) session.getAttribute("userSessionId");
-            Map<String, List<ShotResult>> allUsersResults =
-                    (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
-
-            List<ShotResult> userResults = null;
-            if (userSessionId != null && allUsersResults != null) {
-              userResults = allUsersResults.get(userSessionId);
-            }
-          %>
-          <% if (userResults != null && !userResults.isEmpty()) { %>
-          <table>
-            <thead>
-            <tr>
-              <th>X</th>
-              <th>Y</th>
-              <th>R</th>
-              <th>Результат</th>
-              <th>Время</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (ShotResult result : userResults) { %>
-            <tr class="<%= result.isHit() != null && Boolean.TRUE.equals(result.isHit()) ? "hit" : "miss" %>">
-              <td><%= result.getX() %></td>
-              <td><%= result.getY() %></td>
-              <td><%= result.getR() %></td>
-              <td><%=
-              result.isHit() == null ? "Невозможно определить" :
-                      Boolean.TRUE.equals(result.isHit()) ? "Попадание" : "Промах"
-              %></td>
-              <td><%= result.getFormattedTimestamp() %></td>
-            </tr>
-            <% } %>
-            </tbody>
-          </table>
-          <% } %>
-        </div>
+            <p id="r-error" class="error-text"></p>
+          </div>
+          <input class="param-submit" type="submit" value="Отправить">
+        </form>
       </div>
     </main>
     <script src="${pageContext.request.contextPath}/js/main.js"></script>
