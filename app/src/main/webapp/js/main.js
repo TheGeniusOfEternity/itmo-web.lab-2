@@ -18,14 +18,7 @@ xInputs.forEach(checkbox => {
 
 rInput.addEventListener("change", () => {
   const scaledCoords = scaleByRadius(xValue, parseFloat(yInput.value))
-  const x = findClosestPoint(scaledCoords.x)
-  xInputs.forEach(input => {
-    if (input.value === x.toString()) {
-      input.checked = true
-      checkInputs(input)
-    }
-  })
-  xValue = x
+  findClosestPoint(scaledCoords.x)
   yInput.value = scaledCoords.y
 })
 
@@ -38,19 +31,12 @@ svg.addEventListener('click', function(e) {
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
   const scaledCoords = scaleByRadius(svgP.x - 150, 150 - svgP.y)
-  const x = findClosestPoint(scaledCoords.x)
-
-  xInputs.forEach(input => {
-    if (input.value === x.toString()) {
-      input.checked = true
-      checkInputs(input)
-    }
-  })
-  xValue = x
+  findClosestPoint(scaledCoords.x)
   yInput.value = scaledCoords.y
 });
 
-form.addEventListener("submit", () => {
+form.addEventListener("submit", (e) => {
+  e.preventDefault()
 
   const x = xValue
   const y = yInput.value
@@ -69,7 +55,12 @@ form.addEventListener("submit", () => {
       rErrorText.innerHTML = errorText.text
       break
     default:
-      window.open(`/main?x=${x}&y=${y}&r=${r}`)
+      const params = new URLSearchParams({
+        x: x.toString(),
+        y: y.toString(),
+        r: r.toString(),
+      })
+      location.assign(`/main?${params}`)
   }
 })
 
@@ -102,7 +93,13 @@ const findClosestPoint = (x) => {
       closestPoint = value;
     }
   });
-  return closestPoint;
+  xInputs.forEach(input => {
+    if (input.value === closestPoint.toString()) {
+      input.checked = true
+      checkInputs(input)
+    }
+  })
+  xValue = closestPoint
 }
 
 const addCircle = (x, y) => {
