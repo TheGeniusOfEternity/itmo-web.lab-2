@@ -10,10 +10,22 @@ const rErrorText = document.getElementById("r-error")
 const svg = document.getElementById('svg-graph');
 
 const xValues = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
+
 let xValue = -2
+let yPrevValue = ""
 
 xInputs.forEach(checkbox => {
   checkbox.addEventListener("click", () => checkInputs(checkbox))
+})
+
+yInput.addEventListener("input", () => {
+  const regex = /^(-|-?\d|-?\d\.\d{0,2}|)$/
+  if (!regex.test(yInput.value) && yInput.value !== "" || yInput.value === "-0")
+    yInput.value = yPrevValue
+  const num = parseFloat(yInput.value)
+  if ((isNaN(num) || -3 >= num || num >= 3) && !yInput.value.match(/^-?$/))
+    yInput.value = yPrevValue
+    yPrevValue = yInput.value
 })
 
 rInput.addEventListener("change", () => {
@@ -33,10 +45,16 @@ svg.addEventListener('click', function(e) {
   const scaledCoords = scaleByRadius(svgP.x - 150, 150 - svgP.y)
   findClosestPoint(scaledCoords.x)
   yInput.value = scaledCoords.y
+
+  sendRequest()
 });
 
 form.addEventListener("submit", (e) => {
   e.preventDefault()
+  sendRequest()
+})
+
+const sendRequest = () => {
 
   const x = xValue
   const y = yInput.value
@@ -62,7 +80,7 @@ form.addEventListener("submit", (e) => {
       })
       location.assign(`/main?${params}`)
   }
-})
+}
 
 const checkInputs = (checkbox) => {
   if (checkbox.checked) {
@@ -77,8 +95,8 @@ const checkInputs = (checkbox) => {
 
 const scaleByRadius = (x, y) => {
   return {
-    x: (x * rInput.value / 120).toFixed(1),
-    y: (y * rInput.value / 120).toFixed(1)
+    x: (x * rInput.value / 120).toFixed(2),
+    y: (y * rInput.value / 120).toFixed(2)
   }
 }
 
