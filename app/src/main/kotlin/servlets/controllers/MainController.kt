@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import java.io.IOException
 
-@WebServlet(name = "ControllerServlet", urlPatterns = ["/"])
+@WebServlet(name = "ControllerServlet", urlPatterns = ["/main/*"])
 class MainController : HttpServlet() {
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {

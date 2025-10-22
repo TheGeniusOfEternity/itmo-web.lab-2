@@ -1,0 +1,221 @@
+:root {
+    --color-background: #ffe5ec;
+    --color-header: #ff8fab;
+    --color-primary: #ffb3c6;
+    --color-secondary: #ffc2d1;
+    --color-active: #fb6f92;
+}
+
+@font-face {
+    font-family: "Comfortaa";
+    src: url("../fonts/Comfortaa.ttf");
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Comfortaa, sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    header {
+        height: fit-content;
+        padding: 3vh 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5rem;
+        background-color: var(--color-header);
+
+        h3:first-child {
+            margin-right: auto;
+        }
+        h3 {
+            margin: 0;
+            color: white;
+        }
+    }
+
+    main {
+        display: grid;
+        grid-template-columns: 1.6fr 2fr 1.2fr;
+        gap: 2rem;
+        padding: 2rem;
+        height: 100%;
+        background-color: #ffe5ec;
+
+        > div {
+            background-color: white;
+            border-radius: 10px;
+        }
+
+        .form {
+            padding: 1rem;
+
+            form {
+                display: flex;
+                flex-direction: column;
+
+                .input-block {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+
+                    h4 {
+                        margin: 0;
+                    }
+
+                    .param-group {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 1rem;
+                    }
+
+                    .param-checkbox {
+
+                        label {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 0.5rem 1rem;
+                            border-radius: 5px;
+                            background-color: var(--color-secondary);
+                            color: white;
+                            transition: background-color 0.3s;
+                        }
+
+                        input {
+                            display: none;
+                        }
+
+                        input:checked + label {
+                            background-color: var(--color-active)
+                        }
+                    }
+
+                    .param-text, .param-select {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5rem;
+                        border-radius: 5px;
+
+                        label {
+                            font-weight: bold;
+                        }
+
+                        input, select {
+                            padding: 0.5rem;
+                            border: solid 2px var(--color-secondary);
+                            border-radius: 5px;
+                        }
+                    }
+
+                    .param-select {
+                        .wrapper {
+                            position: relative;
+                        }
+
+                        select {
+                            appearance: none;
+                            -webkit-appearance: none;
+                            -moz-appearance: none;
+                            width: 100%;
+                            background: transparent;
+                            z-index: 10;
+                        }
+
+                        select:hover {
+                            cursor: pointer;
+                        }
+
+                        svg {
+                            position: absolute;
+                            right: 0.25rem;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            height: 60%;
+                            aspect-ratio: 1 / 1;
+                            z-index: 0;
+                            width: auto;
+                        }
+                    }
+
+                    .error-text {
+                        margin: 0.5rem 0;
+                        color: red;
+                        height: 0;
+                        transition: all 0.3s;
+                    }
+
+                    .show-error {
+                        height: 1rem;
+                    }
+                }
+
+                .param-submit {
+                    background-color: var(--color-header);
+                    color: white;
+                    border: none;
+                    padding: 0.6rem 1rem;
+                    font-size: 1rem;
+                    border-radius: 5px;
+                    transition: background-color 0.3s;
+                }
+
+                .param-submit:hover,
+                .param-checkbox label:hover {
+                    background-color: var(--color-active);
+                    cursor: pointer;
+                }
+
+                .param-checkbox select:focus,
+                .param-text input:focus {
+                    border-color: var(--color-active);
+                    outline: none;
+                }
+            }
+        }
+
+        .image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+
+            svg {
+                aspect-ratio: 1 /1;
+                height: 60vh;
+            }
+
+            svg:hover {
+                cursor: pointer;
+            }
+        }
+
+        .table {
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 20px 0;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            .hit {
+                background-color: #90EE90;
+            }
+            .miss {
+                background-color: #FFB6C1;
+            }
+        }
+    }
+}

@@ -1,20 +1,23 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: maksim
-  Date: 19.10.2025
-  Time: 13:09
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html lang="ru">
 <head>
-  <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css">
+  <title>Результат проверки</title>
 </head>
 <body>
-  <h1>Params are
-    <%= request.getAttribute("x") %>,
-    <%= request.getAttribute("y") %>,
-    <%= request.getAttribute("r") %>
-  </h1>
+  <header>
+    <h3>Сафин Максим Владиславович</h3>
+    <h3>Группа P3222</h3>
+    <h3>Вар №56375</h3>
+  </header>
+  <main>
+    <h1>Params are
+      <%= request.getAttribute("x") %>,
+      <%= request.getAttribute("y") %>,
+      <%= request.getAttribute("r") %>
+    </h1>
+    <a href="${pageContext.request.contextPath}/main/">Вернуться к форме</a>
+  </main>
 </body>
 </html>

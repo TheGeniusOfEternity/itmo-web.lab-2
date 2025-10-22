@@ -15,13 +15,32 @@ class InternalServletAccessFilter: Filter {
 
         val path = req.requestURI
         val query = req.queryString
-        val isRootWithParams = path == "/" && (query == null || query.isNotEmpty())
+        val isRootWithParams = path == "/main" && (query == null || query.isNotEmpty())
+
+        if (isStaticResource(path)) {
+            chain.doFilter(request, response)
+            return
+        }
 
         if (!isRootWithParams &&
             req.getAttribute("javax.servlet.forward.request_uri") == null) {
-            resp.sendRedirect("/")
+            resp.sendRedirect("/main")
             return
         }
         chain.doFilter(request, response)
+    }
+
+    private fun isStaticResource(path: String): Boolean {
+        return path.endsWith(".css") ||
+                path.endsWith(".js") ||
+                path.endsWith(".png") ||
+                path.endsWith(".jpg") ||
+                path.endsWith(".ico") ||
+                path.endsWith(".woff") ||
+                path.endsWith(".woff2") ||
+                path.endsWith(".ttf") ||
+                path.startsWith("/css/") ||
+                path.startsWith("/js/") ||
+                path.startsWith("/images/")
     }
 }
