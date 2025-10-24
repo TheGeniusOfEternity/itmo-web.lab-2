@@ -42,7 +42,7 @@ body {
 
     main {
         display: grid;
-        grid-template-columns: 1.6fr 2fr 1.2fr;
+        grid-template-columns: auto 2fr 1fr;
         gap: 2rem;
         padding: 2rem;
         height: 100%;

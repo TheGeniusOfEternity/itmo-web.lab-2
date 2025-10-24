@@ -36,30 +36,36 @@ class AreaCheckModel: HttpServlet() {
         fun sendHtml(x: Float?, y: Float?, r: Float?, isHit: Boolean?) {
             response.contentType = "text/html;charset=UTF-8"
             val out: PrintWriter = response.writer
-
             val contextPath: String = request.contextPath
             val html = """
                 <html>
                     <head>
-                        <link rel="stylesheet" type="text/css" href="$contextPath/styles/style.css">
-                        <title>My Page</title>
+                        <link rel="stylesheet" type="text/css" href="${contextPath}/css/main.css">
+                        <title>Результат</title>
                     </head>
                     <body>
-                        <h1>Check result</h1>
-                        <div>
-                            <span>x: ${x ?: "Параметр не был получен"}</span>
-                            <span>y: ${y ?: "Параметр не был получен"}</span>
-                            <span>r: ${r ?: "Параметр не был получен"}</span>
-                            <h4>Результат: 
-                            ${
-                                when (isHit) {
-                                    null -> "Неверный формат данных"
-                                    false -> "Промах"
-                                    else -> "Попадание"
+                        <header>
+                           <h3>${request.getAttribute("username")}</h3>
+                           <h3>Группа ${request.getAttribute("group")}</h3>
+                           <h3>Вариант №${request.getAttribute("taskId")}</h3>
+                         </header>
+                        <main>
+                            <h1>Check result</h1>
+                            <div>
+                                <span>x: ${x ?: "Параметр не был получен"}</span>
+                                <span>y: ${y ?: "Параметр не был получен"}</span>
+                                <span>r: ${r ?: "Параметр не был получен"}</span>
+                                <h4>Результат: 
+                                ${
+                                    when (isHit) {
+                                        null -> "Неверный формат данных"
+                                        false -> "Промах"
+                                        else -> "Попадание"
+                                    }
                                 }
-                            }
-                            </h4>
-                        </div>
+                                </h4>
+                            </div>
+                        </main>
                     </body>
                 </html>
             """.trimIndent()
@@ -81,6 +87,7 @@ class AreaCheckModel: HttpServlet() {
 
         // Получаем или создаем Map для хранения результатов всех пользователей
         val context = servletContext
+        @Suppress("UNCHECKED_CAST")
         var allUsersResults = context.getAttribute("allUsersShotResults") as? MutableMap<String, MutableList<ShotResult>>
 
         if (allUsersResults == null) {

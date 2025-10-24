@@ -1,20 +1,8 @@
 <%@ page import="servlets.models.ShotResult" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css">
-    <title>Главная</title>
-  </head>
-  <body>
-    <header>
-      <h3>Сафин Максим Владиславович</h3>
-      <h3>Группа P3222</h3>
-      <h3>Вар №56375</h3>
-    </header>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="components/header.jsp"%>
     <main>
       <div class="table">
         <%
