@@ -74,7 +74,7 @@ class AreaCheckModel: HttpServlet() {
                                 </span>
                             </div>
                             <div>
-                                <a href="/main">Назад</a>
+                                <a href="$contextPath/main">Назад</a>
                             </div>
                         </main>
                     </body>
