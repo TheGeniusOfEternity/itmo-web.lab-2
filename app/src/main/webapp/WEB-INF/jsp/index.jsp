@@ -6,6 +6,7 @@
     <main>
       <div class="table">
         <%
+          request.setAttribute("pageTitle", "Главная");
           // Получаем ID сессии текущего пользователя
           String userSessionId = (String) session.getAttribute("userSessionId");
           Map<String, List<ShotResult>> allUsersResults =

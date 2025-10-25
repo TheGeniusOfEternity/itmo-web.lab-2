@@ -38,9 +38,11 @@ class AreaCheckModel: HttpServlet() {
             val out: PrintWriter = response.writer
             val contextPath: String = request.contextPath
             val html = """
+                <!DOCTYPE html>
                 <html>
                     <head>
                         <link rel="stylesheet" type="text/css" href="${contextPath}/css/main.css">
+                        <link rel="stylesheet" type="text/css" href="${contextPath}/css/result.css">
                         <title>Результат</title>
                     </head>
                     <body>
@@ -49,13 +51,19 @@ class AreaCheckModel: HttpServlet() {
                            <h3>Группа ${request.getAttribute("group")}</h3>
                            <h3>Вариант №${request.getAttribute("taskId")}</h3>
                          </header>
-                        <main>
-                            <h1>Check result</h1>
+                        <main class="fade-in">
                             <div>
-                                <span>x: ${x ?: "Параметр не был получен"}</span>
-                                <span>y: ${y ?: "Параметр не был получен"}</span>
-                                <span>r: ${r ?: "Параметр не был получен"}</span>
-                                <h4>Результат: 
+                                <h2>Результат проверки</h2>
+                            </div>
+                            <div>
+                                <span>x</span>
+                                <span>y</span>
+                                <span>r</span>
+                                <span>Статус</span>
+                                <span>${x ?: "Параметр не был получен"}</span>
+                                <span>${y ?: "Параметр не был получен"}</span>
+                                <span>${r ?: "Параметр не был получен"}</span>
+                                <span> 
                                 ${
                                     when (isHit) {
                                         null -> "Неверный формат данных"
@@ -63,7 +71,10 @@ class AreaCheckModel: HttpServlet() {
                                         else -> "Попадание"
                                     }
                                 }
-                                </h4>
+                                </span>
+                            </div>
+                            <div>
+                                <a href="/main">Назад</a>
                             </div>
                         </main>
                     </body>
