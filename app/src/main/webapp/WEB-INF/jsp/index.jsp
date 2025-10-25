@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="eternal" uri="/WEB-INF/data.tld" %>
 <%@ include file="components/header.jsp"%>
     <main>
       <div class="table">
@@ -17,33 +18,15 @@
             userResults = allUsersResults.get(userSessionId);
           }
         %>
-        <% if (userResults != null && !userResults.isEmpty()) { %>
-        <table>
-          <thead>
-          <tr>
-            <th>X</th>
-            <th>Y</th>
-            <th>R</th>
-            <th>Результат</th>
-            <th>Время</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for (ShotResult result : userResults) { %>
-          <tr class="<%= result.isHit() != null && Boolean.TRUE.equals(result.isHit()) ? "hit" : "miss" %>">
-            <td><%= result.getX() %></td>
-            <td><%= result.getY() %></td>
-            <td><%= result.getR() %></td>
-            <td><%=
-            result.isHit() == null ? "Невозможно определить" :
-                    Boolean.TRUE.equals(result.isHit()) ? "Попадание" : "Промах"
-            %></td>
-            <td><%= result.getFormattedTimestamp() %></td>
-          </tr>
-          <% } %>
-          </tbody>
-        </table>
-        <% } %>
+        <eternal:csv-data-table id="users" separator=";" sortable="true" striped="true" pageSize="2">
+          Имя;Возраст;Город;Зарплата
+          Иван Петров;25;Москва;80000
+          Мария Сидорова;30;Санкт-Петербург;95000
+          Петр Иванов;28;Казань;70000
+          Иван Петров;25;Москва;80000
+          Мария Сидорова;30;Санкт-Петербург;95000
+          Петр Иванов;28;Казань;70000
+        </eternal:csv-data-table>
       </div>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">
