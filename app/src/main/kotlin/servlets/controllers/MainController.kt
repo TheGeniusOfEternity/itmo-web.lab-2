@@ -22,6 +22,11 @@ class MainController : HttpServlet() {
             request.setAttribute("y", y)
             request.setAttribute("r", r)
         }
+
+        request.setAttribute("username", "Сафин Максим Владиславович")
+        request.setAttribute("group", "P3222")
+        request.setAttribute("taskId", 56375)
+
         request.getRequestDispatcher(path).forward(request, response)
     }
 
