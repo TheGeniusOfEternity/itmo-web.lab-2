@@ -2,13 +2,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<% request.setAttribute("pageTitle", "Главная"); %>
 <%@ taglib prefix="eternal" uri="/WEB-INF/data.tld" %>
 <%@ include file="components/header.jsp"%>
     <main>
       <div class="table">
         <%
-          request.setAttribute("pageTitle", "Главная");
-          // Получаем ID сессии текущего пользователя
+          String separator = ";";
           String userSessionId = (String) session.getAttribute("userSessionId");
           Map<String, List<ShotResult>> allUsersResults =
                   (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
@@ -17,16 +17,35 @@
           if (userSessionId != null && allUsersResults != null) {
             userResults = allUsersResults.get(userSessionId);
           }
+          if (userResults != null) {
         %>
-        <eternal:csv-data-table id="users" separator=";" sortable="true" striped="true" pageSize="2">
-          Имя;Возраст;Город;Зарплата
-          Иван Петров;25;Москва;80000
-          Мария Сидорова;30;Санкт-Петербург;95000
-          Петр Иванов;28;Казань;70000
-          Иван Петров;25;Москва;80000
-          Мария Сидорова;30;Санкт-Петербург;95000
-          Петр Иванов;28;Казань;70000
+        <eternal:csv-data-table
+          id="users"
+          separator="<%= separator %>"
+          sortable="true"
+          striped="true"
+          pageSize="4"
+        >
+          <%=
+            "X" + separator +
+            "Y" + separator +
+            "R" + separator +
+            "Результат" + separator +
+            "Время"
+          %>
+          <% for(ShotResult result: userResults) { %>
+          <%=
+            result.getX() + separator +
+            result.getY() + separator +
+            result.getR() + separator +
+            result.isHit() + separator +
+            result.getFormattedTimestamp()
+          %>
+          <% } %>
         </eternal:csv-data-table>
+        <% } else { %>
+          <p>Нет данных о попаданиях</p>
+        <% } %>
       </div>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">

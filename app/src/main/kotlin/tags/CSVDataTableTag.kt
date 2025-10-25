@@ -1,18 +1,18 @@
 package tags
 
 import jakarta.servlet.jsp.JspException
+import jakarta.servlet.jsp.tagext.BodyTagSupport
 import jakarta.servlet.jsp.tagext.SimpleTagSupport
 import java.io.IOException
 import java.io.StringWriter
 
-class CSVDataTableTag : SimpleTagSupport() {
-    private var id: String? = null
+class CSVDataTableTag : BodyTagSupport() {
     private var separator = ","
     private var sortable = false
     private var striped = false
     private var pageSize = 0
 
-    fun setId(id: String?) {
+    override fun setId(id: String?) {
         this.id = id
     }
 
@@ -32,25 +32,27 @@ class CSVDataTableTag : SimpleTagSupport() {
         this.pageSize = pageSize
     }
 
+    override fun doStartTag() = EVAL_BODY_BUFFERED
+
     @Throws(JspException::class, IOException::class)
-    override fun doTag() {
-        val ctx = jspContext
-        val sw = StringWriter()
-        jspBody.invoke(sw)
-        val body = sw.toString().trim { it <= ' ' }
+    override fun doEndTag(): Int {
+        val body = bodyContent?.string?.trim() ?: return SKIP_BODY
 
         // Разбор строк
         val lines = body.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (lines.isEmpty()) return
 
+        val out = pageContext.out
         // Парсинг CSV, 1-я строка - заголовки
         val rows: MutableList<Array<String>> = ArrayList()
         for (line in lines) {
-            val cols = line.split(separator.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val trimmedLine = line.trim()
+            if (trimmedLine.isEmpty()) continue
+            val cols = trimmedLine.split(separator)
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .toTypedArray()
             rows.add(cols)
         }
-
-        val out = ctx.out
 
         // Генерация HTML таблицы
         out.println("<table id=\"" + id + "\" class=\"" + (if (striped) "striped" else "") + "\">")
@@ -126,5 +128,6 @@ class CSVDataTableTag : SimpleTagSupport() {
             out.println("<button onclick=\"prevPage_$id();\">Назад</button>")
             out.println("<button onclick=\"nextPage_$id();\">Вперёд</button>")
         }
+        return EVAL_PAGE
     }
 }

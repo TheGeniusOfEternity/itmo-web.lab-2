@@ -6,7 +6,7 @@
   <tag>
     <name>csv-data-table</name>
     <tag-class>tags.CSVDataTableTag</tag-class>
-    <body-content>scriptless</body-content>
+    <body-content>JSP</body-content>
     <attribute><name>id</name><required>true</required><rtexprvalue>true</rtexprvalue><type>java.lang.String</type></attribute>
     <attribute><name>separator</name><required>false</required><rtexprvalue>true</rtexprvalue><type>java.lang.String</type></attribute>
     <attribute><name>sortable</name><required>false</required><rtexprvalue>true</rtexprvalue><type>boolean</type></attribute>
