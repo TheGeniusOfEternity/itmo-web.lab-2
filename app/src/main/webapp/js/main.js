@@ -23,7 +23,7 @@ window.onload = () => {
     data.forEach((row, index) => {
       const x = parseFloat(row.cells[0]);
       const y = parseFloat(row.cells[1]);
-      const r = parseFloat(rInput.value);
+      const r = parseFloat(row.cells[2]);
 
       const svgX = (x * 120 / r) + 150;
       const svgY = 150 - (y * 120 / r);
@@ -32,10 +32,14 @@ window.onload = () => {
       circle.setAttribute("cx", svgX.toString());
       circle.setAttribute("cy", svgY.toString());
       circle.setAttribute("r", "2");
-      circle.setAttribute("fill", `${data.length - index === 1 ? 'red' : 'black'}`);
+      circle.setAttribute(
+        "fill",
+        `${data.length - index === 1 ? 'purple' : 'black'}`
+      );
 
       svg.appendChild(circle);
     })
+    localStorage.removeItem("hits")
   }
   svg.classList.add("rendered")
 }
