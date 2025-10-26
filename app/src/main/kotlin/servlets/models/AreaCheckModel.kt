@@ -28,7 +28,7 @@ class AreaCheckModel: HttpServlet() {
         fun validate(x: Float?, y: Float?, r: Float?): Boolean? {
             if (x == null || y == null || r == null) return null
             if (x > 0 && y > 0) return (x.pow(2) + y.pow(2)) <= r.pow(2) / 4
-            if (x <= 0 && y >= 0) return (x + y) <= r
+            if (x <= 0 && y >= 0) return (y <= x + r) && (x >= -r) && (y <= r)
             if (x >= 0 && y <= 0) return x <= r/2 && y >= -r
             return false
         }
