@@ -15,6 +15,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: Comfortaa, sans-serif;
+    box-sizing: border-box;
 }
 
 body {
@@ -29,7 +30,7 @@ body {
         align-items: center;
         justify-content: flex-end;
         gap: 5rem;
-        background-color: var(--color-header);
+        background-color: #ff8fab;
 
         h3:first-child {
             margin-right: auto;
@@ -197,24 +198,13 @@ body {
         }
 
         .table {
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                margin: 20px 0;
-            }
-            th, td {
-                border: 1px solid #ddd;
-                padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            p {
                 text-align: center;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            .hit {
-                background-color: #90EE90;
-            }
-            .miss {
-                background-color: #FFB6C1;
+                width: 30vw;
             }
         }
     }

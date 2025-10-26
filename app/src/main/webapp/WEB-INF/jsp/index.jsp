@@ -2,49 +2,51 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<% request.setAttribute("pageTitle", "Главная"); %>
+<%@ taglib prefix="eternal" uri="/WEB-INF/data.tld" %>
 <%@ include file="components/header.jsp"%>
     <main>
-      <div class="table">
-        <%
-          request.setAttribute("pageTitle", "Главная");
-          // Получаем ID сессии текущего пользователя
-          String userSessionId = (String) session.getAttribute("userSessionId");
-          Map<String, List<ShotResult>> allUsersResults =
-                  (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
+      <%
+        String separator = ";";
+        String userSessionId = (String) session.getAttribute("userSessionId");
+        Map<String, List<ShotResult>> allUsersResults =
+                (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
 
-          List<ShotResult> userResults = null;
-          if (userSessionId != null && allUsersResults != null) {
-            userResults = allUsersResults.get(userSessionId);
-          }
+        List<ShotResult> userResults = null;
+        if (userSessionId != null && allUsersResults != null) {
+          userResults = allUsersResults.get(userSessionId);
+        }
+        if (userResults != null) {
+      %>
+      <eternal:csv-data-table
+              id="users"
+              separator="<%= separator %>"
+              sortable="true"
+              striped="true"
+              pageSize="10"
+      >
+        <%=
+        "X" + separator +
+                "Y" + separator +
+                "R" + separator +
+                "Результат" + separator +
+                "Время"
         %>
-        <% if (userResults != null && !userResults.isEmpty()) { %>
-        <table>
-          <thead>
-          <tr>
-            <th>X</th>
-            <th>Y</th>
-            <th>R</th>
-            <th>Результат</th>
-            <th>Время</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% for (ShotResult result : userResults) { %>
-          <tr class="<%= result.isHit() != null && Boolean.TRUE.equals(result.isHit()) ? "hit" : "miss" %>">
-            <td><%= result.getX() %></td>
-            <td><%= result.getY() %></td>
-            <td><%= result.getR() %></td>
-            <td><%=
-            result.isHit() == null ? "Невозможно определить" :
-                    Boolean.TRUE.equals(result.isHit()) ? "Попадание" : "Промах"
-            %></td>
-            <td><%= result.getFormattedTimestamp() %></td>
-          </tr>
-          <% } %>
-          </tbody>
-        </table>
+        <% for(ShotResult result: userResults) { %>
+        <%=
+        result.getX() + separator +
+                result.getY() + separator +
+                result.getR() + separator +
+                result.isHit() + separator +
+                result.getFormattedTimestamp()
+        %>
         <% } %>
+      </eternal:csv-data-table>
+      <% } else { %>
+      <div class="table">
+        <p>Нет данных о попаданиях</p>
       </div>
+      <% } %>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">
           <polygon points="30,150 150,150 150,30" fill="#b8c0ff"></polygon>
