@@ -42,6 +42,7 @@ class AreaCheckModel: HttpServlet() {
                 <!DOCTYPE html>
                 <html>
                     <head>
+                        <link rel="icon" href="${contextPath}/images/favicon.ico">
                         <link rel="stylesheet" type="text/css" href="${contextPath}/css/main.css">
                         <link rel="stylesheet" type="text/css" href="${contextPath}/css/result.css">
                         <title>Результат</title>
