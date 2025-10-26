@@ -9,6 +9,7 @@ import java.io.PrintWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
+
 data class ShotResult(
     val x: Float?,
     val y: Float?,
