@@ -182,20 +182,42 @@ class CSVDataTableTag : BodyTagSupport() {
             if (sortable) {
                 out.println("""
                 <script>
+                    const parseDate = (dateStr) => {
+                        const [datePart, timePart] = dateStr.split(' ');
+                        const [day, month, year] = datePart.split('.').map(Number);
+                        const [hours, minutes, seconds] = timePart.split(':').map(Number);
+                        return new Date(year, month - 1, day, hours, minutes, seconds);
+                    }
                     const sortTable = (tableId, colIndex) => {
                         const table = document.getElementById(tableId);
-
                         const asc = !table.asc;
-                        
+                    
                         allData_$id.sort((a, b) => {
-                            const aText = a.cells[colIndex];
-                            const bText = b.cells[colIndex];
-                            
-                            return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                    
+                            if (colIndex >= 0 && colIndex <= 2) {
+                                const diff = parseFloat(a.cells[colIndex]) - parseFloat(b.cells[colIndex]);
+                                return asc ? diff : -diff;
+                            }
+                    
+                            if (colIndex === 3) {
+                                const wordComp = a.cells[3].localeCompare(b.cells[3]);
+                                return asc ? wordComp : -wordComp;
+                            }
+                    
+                            if (colIndex === 4) {
+                                const dateA = parseDate(a.cells[4]);
+                                const dateB = parseDate(b.cells[4]);
+                                const timeComp = dateA - dateB;
+                                return asc ? timeComp : -timeComp;
+                            }
+                    
+                            const valA = a.cells[colIndex];
+                            const valB = b.cells[colIndex];
+                            const comp = valA.localeCompare(valB);
+                            return asc ? comp : -comp;
                         });
-                        
+                    
                         table.asc = asc;
-                        
                         renderPage_$id();
                     }
                 </script>
