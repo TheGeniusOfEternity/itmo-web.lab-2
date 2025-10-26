@@ -5,6 +5,7 @@ import jakarta.servlet.jsp.tagext.BodyTagSupport
 import jakarta.servlet.jsp.tagext.SimpleTagSupport
 import java.io.IOException
 import java.io.StringWriter
+import kotlin.reflect.typeOf
 
 class CSVDataTableTag : BodyTagSupport() {
     private var separator = ","
@@ -38,12 +39,11 @@ class CSVDataTableTag : BodyTagSupport() {
     override fun doEndTag(): Int {
         val body = bodyContent?.string?.trim() ?: return SKIP_BODY
 
-        // Разбор строк
         val lines = body.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val rows: MutableList<Array<String>> = ArrayList()
 
         val out = pageContext.out
-        // Парсинг CSV, 1-я строка - заголовки
-        val rows: MutableList<Array<String>> = ArrayList()
+
         for (line in lines) {
             val trimmedLine = line.trim()
             if (trimmedLine.isEmpty()) continue
@@ -54,10 +54,9 @@ class CSVDataTableTag : BodyTagSupport() {
             rows.add(cols)
         }
 
-        // Генерация HTML таблицы
+        out.println("<div class=\"table\">")
         out.println("<table id=\"" + id + "\" class=\"" + (if (striped) "striped" else "") + "\">")
 
-        // Заголовок
         out.println("<thead><tr>")
         for (header in rows[0]) {
             if (sortable) {
@@ -68,66 +67,113 @@ class CSVDataTableTag : BodyTagSupport() {
         }
         out.println("</tr></thead>")
 
-        // Тело таблицы
         out.println("<tbody>")
         for (i in 1 until rows.size) {
             val row = rows[i]
-            val rowClass = if ((striped && i % 2 == 1)) " class=\"striped-row\"" else ""
+            var rowClass = " class=\""
+
+            rowClass += if (striped && i % 2 == 1) "striped-row " else " "
+            when {
+                row.contains("true") -> rowClass += "hit"
+                row.contains("false") -> rowClass += "miss"
+            }
+            rowClass += "\""
+
             out.print("<tr$rowClass>")
             for (col in row) {
-                out.print("<td>" + col.trim { it <= ' ' } + "</td>")
+                out.println("""
+                    <td>
+                    ${
+                        when(col) {
+                            "true" -> "Попадание"
+                            "false" -> "Промах"
+                            else -> col.trim { it <= ' ' }
+                        }
+                    }
+                    </td>
+                """.trimIndent())
             }
             out.println("</tr>")
         }
         out.println("</tbody>")
         out.println("</table>")
 
-        // Сценарии сортировки и пагинации (если включены)
         if (sortable) {
-            out.println("<script>")
-            out.println("function sortTable(tableId, colIndex) {")
-            out.println("  var table = document.getElementById(tableId);")
-            out.println("  var tbody = table.tBodies[0];")
-            out.println("  var rows = Array.from(tbody.rows);")
-            out.println("  var asc = !table.asc;")
-            out.println("  rows.sort(function(a, b) {")
-            out.println("    var aText = a.cells[colIndex].textContent.trim();")
-            out.println("    var bText = b.cells[colIndex].textContent.trim();")
-            out.println("    return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);")
-            out.println("  });")
-            out.println("  rows.forEach(function(row) { tbody.appendChild(row); });")
-            out.println("  table.asc = asc;")
-            out.println("}")
-            out.println("</script>")
+            out.println("""
+                <script>
+                    const sortTable = (tableId, colIndex) => {
+                        const table = document.getElementById(tableId);
+                        const tbody = table.tBodies[0];
+                        const rows = Array.from(tbody.rows);
+                        const asc = !table.asc;
+                        
+                        rows.sort((a, b) => {
+                            const aText = a.cells[colIndex].textContent.trim();
+                            const bText = b.cells[colIndex].textContent.trim();
+                            
+                            return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                        })
+                        
+                        rows.forEach((row) => {
+                            tbody.appendChild(row); 
+                        });
+                        table.asc = asc;
+                    }
+                </script>
+            """.trimIndent())
         }
 
         if (pageSize > 0) {
-            // Простейшая пагинация (можно доработать)
-            out.println("<script>")
-            out.println("var currentPage_$id = 1;")
-            out.println("var pageSize_$id = $pageSize;")
-            out.println("var table_$id = document.getElementById('$id');")
-            out.println("var tbody_$id = table_$id.tBodies[0];")
-            out.println("var rows_$id = Array.from(tbody_$id.rows);")
-            out.println("function renderPage_$id() {")
-            out.println("  var start = (currentPage_$id - 1) * pageSize_$id;")
-            out.println("  var end = start + pageSize_$id;")
-            out.println("  rows_$id.forEach(function(r, i) {")
-            out.println("    r.style.display = (i >= start && i < end) ? '' : 'none';")
-            out.println("  });")
-            out.println("}")
-            out.println("function nextPage_$id() {")
-            out.println("  if (currentPage_$id * pageSize_$id < rows_$id.length) { currentPage_$id++; renderPage_$id(); }")
-            out.println("}")
-            out.println("function prevPage_$id() {")
-            out.println("  if (currentPage_$id > 1) { currentPage_$id--; renderPage_$id(); }")
-            out.println("}")
-            out.println("renderPage_$id();")
-            out.println("</script>")
-
-            out.println("<button onclick=\"prevPage_$id();\">Назад</button>")
-            out.println("<button onclick=\"nextPage_$id();\">Вперёд</button>")
+            out.println("""
+                <div class="buttons">
+                    <button id="prevBtn_$id" onclick="prevPage_$id();">Назад</button>
+                    <button id="nextBtn_$id" onclick="nextPage_$id();">Вперёд</button>
+                </div>
+                <script>
+                    let currentPage_$id = 1;
+                    const pageSize_$id = $pageSize;
+                    const table_$id = document.getElementById('$id');
+                    const nextBtn_$id = document.getElementById('nextBtn_$id');
+                    const prevBtn_$id = document.getElementById('prevBtn_$id');
+                    const tbody_$id = table_$id.tBodies[0];
+                    const rows_$id = Array.from(tbody_$id.rows);
+                    
+                    const renderPage_$id = () => {
+                        const start = (currentPage_$id - 1) * pageSize_$id;
+                        const end = start + pageSize_$id;
+                        
+                        if (currentPage_$id === 1) {
+                            prevBtn_$id.disabled = true;
+                        } else prevBtn_$id.disabled = false;
+                        
+                        if (currentPage_$id * pageSize_$id >= rows_$id.length) {
+                            nextBtn_$id.disabled = true;
+                        } else nextBtn_$id.disabled = false;
+                        
+                        rows_$id.forEach((r, i) => {
+                            r.style.display = (i >= start && i < end) ? '' : 'none';
+                        })
+                    }
+                    
+                    const nextPage_$id = () => {
+                        if (currentPage_$id * pageSize_$id < rows_$id.length) {
+                            currentPage_$id++; 
+                            renderPage_$id();
+                        }
+                    }
+                    
+                    const prevPage_$id = () => {
+                        if (currentPage_$id > 1) {
+                            currentPage_$id--; 
+                            renderPage_$id();
+                        }
+                    }
+                    
+                    renderPage_$id()
+                </script>
+            """.trimIndent())
         }
+        out.println("</div>")
         return EVAL_PAGE
     }
 }

@@ -6,47 +6,47 @@
 <%@ taglib prefix="eternal" uri="/WEB-INF/data.tld" %>
 <%@ include file="components/header.jsp"%>
     <main>
-      <div class="table">
-        <%
-          String separator = ";";
-          String userSessionId = (String) session.getAttribute("userSessionId");
-          Map<String, List<ShotResult>> allUsersResults =
-                  (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
+      <%
+        String separator = ";";
+        String userSessionId = (String) session.getAttribute("userSessionId");
+        Map<String, List<ShotResult>> allUsersResults =
+                (Map<String, List<ShotResult>>) application.getAttribute("allUsersShotResults");
 
-          List<ShotResult> userResults = null;
-          if (userSessionId != null && allUsersResults != null) {
-            userResults = allUsersResults.get(userSessionId);
-          }
-          if (userResults != null) {
+        List<ShotResult> userResults = null;
+        if (userSessionId != null && allUsersResults != null) {
+          userResults = allUsersResults.get(userSessionId);
+        }
+        if (userResults != null) {
+      %>
+      <eternal:csv-data-table
+              id="users"
+              separator="<%= separator %>"
+              sortable="true"
+              striped="true"
+              pageSize="10"
+      >
+        <%=
+        "X" + separator +
+                "Y" + separator +
+                "R" + separator +
+                "Результат" + separator +
+                "Время"
         %>
-        <eternal:csv-data-table
-          id="users"
-          separator="<%= separator %>"
-          sortable="true"
-          striped="true"
-          pageSize="4"
-        >
-          <%=
-            "X" + separator +
-            "Y" + separator +
-            "R" + separator +
-            "Результат" + separator +
-            "Время"
-          %>
-          <% for(ShotResult result: userResults) { %>
-          <%=
-            result.getX() + separator +
-            result.getY() + separator +
-            result.getR() + separator +
-            result.isHit() + separator +
-            result.getFormattedTimestamp()
-          %>
-          <% } %>
-        </eternal:csv-data-table>
-        <% } else { %>
-          <p>Нет данных о попаданиях</p>
+        <% for(ShotResult result: userResults) { %>
+        <%=
+        result.getX() + separator +
+                result.getY() + separator +
+                result.getR() + separator +
+                result.isHit() + separator +
+                result.getFormattedTimestamp()
+        %>
         <% } %>
+      </eternal:csv-data-table>
+      <% } else { %>
+      <div class="table">
+        <p>Нет данных о попаданиях</p>
       </div>
+      <% } %>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">
           <polygon points="30,150 150,150 150,30" fill="#b8c0ff"></polygon>
