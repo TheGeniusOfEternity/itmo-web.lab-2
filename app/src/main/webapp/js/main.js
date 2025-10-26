@@ -34,7 +34,7 @@ window.onload = () => {
       circle.setAttribute("r", "2");
       circle.setAttribute(
         "fill",
-        `${data.length - index === 1 ? 'purple' : 'black'}`
+        `${data.length - index === 1 ? 'magenta' : 'black'}`
       );
 
       svg.appendChild(circle);
@@ -76,7 +76,7 @@ svg.addEventListener('click', (e) => {
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
 
-  xValue = ((svgP.x  - 150) * rInput.value / 120).toFixed(2)
+  xValue = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
   yInput.value = ((150 - svgP.y) * rInput.value / 120).toFixed(2)
 
   sendRequest()

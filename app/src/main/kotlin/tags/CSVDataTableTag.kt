@@ -129,6 +129,7 @@ class CSVDataTableTag : BodyTagSupport() {
                         cells: Array.from(row.cells).map(cell => cell.textContent.trim())
                     };
                 });
+                localStorage.setItem("hits", JSON.stringify(allData_$id));
              
                 const renderPage_$id = () => {
                     tbody_$id.innerHTML = '';
@@ -149,7 +150,7 @@ class CSVDataTableTag : BodyTagSupport() {
                             const tr = document.createElement('tr')
                             trData.cells.forEach(cell => {
                                 const td = document.createElement('td');
-                                td.innerHTML = cell;
+                                td.textContent = cell;
                                 tr.appendChild(td);
                             });
                             trData.classList.forEach(className => {
@@ -158,7 +159,6 @@ class CSVDataTableTag : BodyTagSupport() {
                             tbody_$id.appendChild(tr);
                         };
                     });
-                    localStorage.setItem("hits", JSON.stringify(allData_$id))
                 };
             
                 const nextPage_$id = () => {
