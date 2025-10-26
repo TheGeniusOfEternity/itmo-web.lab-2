@@ -7,15 +7,54 @@ const xErrorText = document.getElementById("x-error")
 const yErrorText = document.getElementById("y-error")
 const rErrorText = document.getElementById("r-error")
 
-const svg = document.getElementById('svg-graph');
 
-const xValues = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
+const svg = document.getElementById('svg-graph');
+const hits = localStorage.getItem("hits")
 
 let xValue = -2
 let yPrevValue = ""
 
+if (hits === null) svg.classList.add("rendered")
+
+window.onload = () => {
+  if (hits !== null) {
+    const data = JSON.parse(hits)
+    svg.classList.remove("rendered")
+    data.forEach((row, index) => {
+      const x = parseFloat(row.cells[0]);
+      const y = parseFloat(row.cells[1]);
+      const r = parseFloat(row.cells[2]);
+
+      const svgX = (x * 120 / r) + 150;
+      const svgY = 150 - (y * 120 / r);
+
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", svgX.toString());
+      circle.setAttribute("cy", svgY.toString());
+      circle.setAttribute("r", "2");
+      circle.setAttribute(
+        "fill",
+        `${data.length - index === 1 ? 'magenta' : 'black'}`
+      );
+
+      svg.appendChild(circle);
+    })
+    localStorage.removeItem("hits")
+  }
+  svg.classList.add("rendered")
+}
+
 xInputs.forEach(checkbox => {
-  checkbox.addEventListener("click", () => checkInputs(checkbox))
+  checkbox.addEventListener("click", () => {
+    if (checkbox.checked) {
+      xValue = checkbox.value
+      xInputs.forEach((cb) => {
+        if (cb !== checkbox) {
+          cb.checked = false;
+        }
+      })
+    }
+  })
 })
 
 yInput.addEventListener("input", () => {
@@ -28,13 +67,7 @@ yInput.addEventListener("input", () => {
     yPrevValue = yInput.value
 })
 
-rInput.addEventListener("change", () => {
-  const scaledCoords = scaleByRadius(xValue, parseFloat(yInput.value))
-  findClosestPoint(scaledCoords.x)
-  yInput.value = scaledCoords.y
-})
-
-svg.addEventListener('click', function(e) {
+svg.addEventListener('click', (e) => {
 
   const pt = svg.createSVGPoint();
 
@@ -42,9 +75,9 @@ svg.addEventListener('click', function(e) {
   pt.y = e.clientY;
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-  const scaledCoords = scaleByRadius(svgP.x - 150, 150 - svgP.y)
-  findClosestPoint(scaledCoords.x)
-  yInput.value = scaledCoords.y
+
+  xValue = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
+  yInput.value = ((150 - svgP.y) * rInput.value / 120).toFixed(2)
 
   sendRequest()
 });
@@ -85,68 +118,13 @@ const sendRequest = () => {
   }
 }
 
-const checkInputs = (checkbox) => {
-  if (checkbox.checked) {
-    xValue = checkbox.value
-    xInputs.forEach((cb) => {
-      if (cb !== checkbox) {
-        cb.checked = false;
-      }
-    })
-  }
-}
-
-const scaleByRadius = (x, y) => {
-  return {
-    x: (x * rInput.value / 120).toFixed(2),
-    y: (y * rInput.value / 120).toFixed(2)
-  }
-}
-
-const findClosestPoint = (x) => {
-  let closestPoint = 0;
-  let minDiff = Infinity;
-
-  xValues.forEach(value => {
-    const diff = Math.abs(value - parseFloat(x));
-    if (diff < minDiff) {
-      minDiff = diff;
-      closestPoint = value;
-    }
-  });
-  xInputs.forEach(input => {
-    if (input.value === closestPoint.toString()) {
-      input.checked = true
-      checkInputs(input)
-    }
-  })
-  xValue = closestPoint
-}
-
-const addCircle = (x, y) => {
-  const pt = svg.createSVGPoint();
-
-  pt.x = x
-  pt.y = y
-
-  const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  circle.setAttribute("cx", svgP.x.toString());
-  circle.setAttribute("cy", svgP.y.toString());
-  circle.setAttribute("r", (rInput.value * 0.25).toString());
-  circle.setAttribute("fill", "red");
-
-  svg.appendChild(circle);
-}
-
 const validate = (x, y, r) => {
-  if (!Number.isFinite(Number(r)))
+  if (!Number.isFinite(Number(x)))
     return {
       input: "x",
       text: "Параметр х не является числом"
     }
-  if (!Number.isFinite(Number(r)))
+  if (!Number.isFinite(Number(y)))
     return {
       input: "y",
       text: "Параметр y не является числом"
