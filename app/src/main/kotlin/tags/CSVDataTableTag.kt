@@ -2,10 +2,7 @@ package tags
 
 import jakarta.servlet.jsp.JspException
 import jakarta.servlet.jsp.tagext.BodyTagSupport
-import jakarta.servlet.jsp.tagext.SimpleTagSupport
 import java.io.IOException
-import java.io.StringWriter
-import kotlin.reflect.typeOf
 
 class CSVDataTableTag : BodyTagSupport() {
     private var separator = ","
@@ -64,7 +61,7 @@ class CSVDataTableTag : BodyTagSupport() {
         for (header in rows[0]) {
             if (sortable) {
                 out.println("""
-                    <th onclick="sortTable('$id', this.cellIndex})">${header.trim { it <= ' ' }}</th>
+                    <th onclick="sortTable('$id', this.cellIndex)">${header.trim { it <= ' ' }}</th>
                 """.trimIndent())
             } else {
                 out.println("""
@@ -124,7 +121,7 @@ class CSVDataTableTag : BodyTagSupport() {
                             const bText = b.cells[colIndex].textContent.trim();
                             
                             return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-                        })
+                        });
                         
                         rows.forEach((row) => {
                             tbody.appendChild(row); 
@@ -164,24 +161,24 @@ class CSVDataTableTag : BodyTagSupport() {
                         
                         rows_$id.forEach((r, i) => {
                             r.style.display = (i >= start && i < end) ? '' : 'none';
-                        })
-                    }
+                        });
+                    };
                     
                     const nextPage_$id = () => {
                         if (currentPage_$id * pageSize_$id < rows_$id.length) {
                             currentPage_$id++; 
                             renderPage_$id();
-                        }
-                    }
+                        };
+                    };
                     
                     const prevPage_$id = () => {
                         if (currentPage_$id > 1) {
                             currentPage_$id--; 
                             renderPage_$id();
-                        }
-                    }
+                        };
+                    };
                     
-                    renderPage_$id()
+                    renderPage_$id();
                 </script>
             """.trimIndent())
         }
