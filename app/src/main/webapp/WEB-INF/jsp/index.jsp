@@ -1,6 +1,7 @@
 <%@ page import="servlets.models.ShotResult" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% request.setAttribute("pageTitle", "Главная"); %>
 <%@ taglib prefix="eternal" uri="/WEB-INF/data.tld" %>
@@ -16,10 +17,9 @@
         if (userSessionId != null && allUsersResults != null) {
           userResults = allUsersResults.get(userSessionId);
         }
-        if (userResults != null) {
       %>
       <eternal:csv-data-table
-              id="users"
+              id="hits_table"
               separator="<%= separator %>"
               sortable="true"
               striped="true"
@@ -32,7 +32,10 @@
                 "Результат" + separator +
                 "Время"
         %>
-        <% for(ShotResult result: userResults) { %>
+        <%
+          if (userResults == null) userResults = new ArrayList<>();
+          for(ShotResult result: userResults) {
+        %>
         <%=
         result.getX() + separator +
                 result.getY() + separator +
@@ -42,11 +45,6 @@
         %>
         <% } %>
       </eternal:csv-data-table>
-      <% } else { %>
-      <div class="table">
-        <p>Нет данных о попаданиях</p>
-      </div>
-      <% } %>
       <div class="image">
         <svg viewBox="0 0 300 300" id="svg-graph">
           <polygon points="30,150 150,150 150,30" fill="#b8c0ff"></polygon>

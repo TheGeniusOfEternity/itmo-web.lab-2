@@ -41,55 +41,56 @@ class CSVDataTableTag : BodyTagSupport() {
 
         val out = pageContext.out
 
-        for (line in lines) {
-            val trimmedLine = line.trim()
-            if (trimmedLine.isEmpty()) continue
-            val cols = trimmedLine.split(separator)
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .toTypedArray()
-            rows.add(cols)
-        }
+        out.println("<div class=\"table\">")
+        if (lines.size > 1) {
+            for (line in lines) {
+                val trimmedLine = line.trim()
+                if (trimmedLine.isEmpty()) continue
+                val cols = trimmedLine.split(separator)
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .toTypedArray()
+                rows.add(cols)
+            }
 
-        out.println("""
-            <div class="table">
+            out.println("""
                 <table id="$id" class="${if (striped) "striped" else ""}">
                     <thead>
                         <tr>
         """.trimIndent())
 
-        for (header in rows[0]) {
-            if (sortable) {
-                out.println("""
+            for (header in rows[0]) {
+                if (sortable) {
+                    out.println("""
                     <th onclick="sortTable('$id', this.cellIndex)">${header.trim { it <= ' ' }}</th>
                 """.trimIndent())
-            } else {
-                out.println("""
+                } else {
+                    out.println("""
                     <th>${header.trim { it <= ' ' }}</th>
                 """.trimIndent())
+                }
             }
-        }
-        out.println("""
+            out.println("""
                 </tr>
             </thead>
             <tbody>
         """.trimIndent())
 
-        for (i in 1 until rows.size) {
-            val row = rows[i]
-            val classNames = mutableListOf<String>()
+            for (i in 1 until rows.size) {
+                val row = rows[i]
+                val classNames = mutableListOf<String>()
 
-            if (striped && i % 2 == 1) classNames.add("striped-row")
-            when {
-                row.contains("true") -> classNames.add("hit")
-                row.contains("false") -> classNames.add("miss")
-            }
-            val rowClass = if (classNames.isEmpty()) ""
+                if (striped && i % 2 == 1) classNames.add("striped-row")
+                when {
+                    row.contains("true") -> classNames.add("hit")
+                    row.contains("false") -> classNames.add("miss")
+                }
+                val rowClass = if (classNames.isEmpty()) ""
                 else "class=\"${classNames.joinToString(" ")}\""
 
-            out.print("<tr $rowClass>")
-            for (col in row) {
-                out.println("""
+                out.print("<tr $rowClass>")
+                for (col in row) {
+                    out.println("""
                     <td>
                     ${
                         when(col) {
@@ -100,15 +101,15 @@ class CSVDataTableTag : BodyTagSupport() {
                     }
                     </td>
                 """.trimIndent())
+                }
+                out.println("</tr>")
             }
-            out.println("</tr>")
-        }
-        out.println("""
+            out.println("""
                 </tbody>
             </table>
         """.trimIndent())
 
-        out.println("""
+            out.println("""
                 <div class="buttons">
                     <button id="prevBtn_$id" onclick="prevPage_$id();">Назад</button>
                     <button id="nextBtn_$id" onclick="nextPage_$id();">Вперёд</button>
@@ -128,7 +129,7 @@ class CSVDataTableTag : BodyTagSupport() {
                         cells: Array.from(row.cells).map(cell => cell.textContent.trim())
                     };
                 });
-            
+             
                 const renderPage_$id = () => {
                     tbody_$id.innerHTML = '';
                     
@@ -157,6 +158,7 @@ class CSVDataTableTag : BodyTagSupport() {
                             tbody_$id.appendChild(tr);
                         };
                     });
+                    localStorage.setItem("hits", JSON.stringify(allData_$id))
                 };
             
                 const nextPage_$id = () => {
@@ -177,8 +179,8 @@ class CSVDataTableTag : BodyTagSupport() {
             </script>
         """.trimIndent())
 
-        if (sortable) {
-            out.println("""
+            if (sortable) {
+                out.println("""
                 <script>
                     const sortTable = (tableId, colIndex) => {
                         const table = document.getElementById(tableId);
@@ -198,6 +200,9 @@ class CSVDataTableTag : BodyTagSupport() {
                     }
                 </script>
             """.trimIndent())
+            }
+        } else {
+            out.println("<p>Нет данных о попаданиях</p></div>")
         }
 
         return EVAL_PAGE

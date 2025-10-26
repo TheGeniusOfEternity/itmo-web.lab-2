@@ -190,6 +190,12 @@ body {
             svg {
                 aspect-ratio: 1 /1;
                 height: 60vh;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .rendered {
+                opacity: 1;
             }
 
             svg:hover {
