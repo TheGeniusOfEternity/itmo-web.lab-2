@@ -54,20 +54,30 @@ class CSVDataTableTag : BodyTagSupport() {
             rows.add(cols)
         }
 
-        out.println("<div class=\"table\">")
-        out.println("<table id=\"" + id + "\" class=\"" + (if (striped) "striped" else "") + "\">")
+        out.println("""
+            <div class="table">
+                <table id="$id" class="${if (striped) "striped" else ""}">
+                    <thead>
+                        <tr>
+        """.trimIndent())
 
-        out.println("<thead><tr>")
         for (header in rows[0]) {
             if (sortable) {
-                out.println("<th onclick=\"sortTable('" + id + "', this.cellIndex)\">" + header.trim { it <= ' ' } + "</th>")
+                out.println("""
+                    <th onclick="sortTable('$id', this.cellIndex})">${header.trim { it <= ' ' }}</th>
+                """.trimIndent())
             } else {
-                out.println("<th>" + header.trim { it <= ' ' } + "</th>")
+                out.println("""
+                    <th>${header.trim { it <= ' ' }}</th>
+                """.trimIndent())
             }
         }
-        out.println("</tr></thead>")
+        out.println("""
+                </tr>
+            </thead>
+            <tbody>
+        """.trimIndent())
 
-        out.println("<tbody>")
         for (i in 1 until rows.size) {
             val row = rows[i]
             var rowClass = " class=\""
@@ -95,8 +105,10 @@ class CSVDataTableTag : BodyTagSupport() {
             }
             out.println("</tr>")
         }
-        out.println("</tbody>")
-        out.println("</table>")
+        out.println("""
+                </tbody>
+            </table>
+        """.trimIndent())
 
         if (sortable) {
             out.println("""
