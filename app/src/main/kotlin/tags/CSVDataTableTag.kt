@@ -108,82 +108,98 @@ class CSVDataTableTag : BodyTagSupport() {
             </table>
         """.trimIndent())
 
+        out.println("""
+                <div class="buttons">
+                    <button id="prevBtn_$id" onclick="prevPage_$id();">Назад</button>
+                    <button id="nextBtn_$id" onclick="nextPage_$id();">Вперёд</button>
+                </div>
+            </div>
+            <script>
+                let currentPage_$id = 1;
+                const pageSize_$id = $pageSize;
+                const table_$id = document.getElementById('$id');
+                const nextBtn_$id = document.getElementById('nextBtn_$id');
+                const prevBtn_$id = document.getElementById('prevBtn_$id');
+                const tbody_$id = table_$id.tBodies[0];
+                const rows_$id = Array.from(tbody_$id.rows);
+                const allData_$id = rows_$id.map(row => {
+                    return {
+                        classList: Array.from(row.classList),
+                        cells: Array.from(row.cells).map(cell => cell.textContent.trim())
+                    };
+                });
+            
+                const renderPage_$id = () => {
+                    tbody_$id.innerHTML = '';
+                    
+                    const start = (currentPage_$id - 1) * pageSize_$id;
+                    const end = start + pageSize_$id;
+            
+                    if (currentPage_$id === 1) {
+                        prevBtn_$id.disabled = true;
+                    } else prevBtn_$id.disabled = false;
+            
+                    if (currentPage_$id * pageSize_$id >= rows_$id.length) {
+                        nextBtn_$id.disabled = true;
+                    } else nextBtn_$id.disabled = false;
+            
+                    allData_$id.forEach((trData, i) => {
+                        if (i >= start && i < end) {
+                            const tr = document.createElement('tr')
+                            trData.cells.forEach(cell => {
+                                const td = document.createElement('td');
+                                td.innerHTML = cell;
+                                tr.appendChild(td);
+                            });
+                            trData.classList.forEach(className => {
+                                tr.classList.add(className);
+                            });
+                            tbody_$id.appendChild(tr);
+                        };
+                    });
+                };
+            
+                const nextPage_$id = () => {
+                    if (currentPage_$id * pageSize_$id < rows_$id.length) {
+                        currentPage_$id++;
+                        renderPage_$id();
+                    };
+                };
+            
+                const prevPage_$id = () => {
+                    if (currentPage_$id > 1) {
+                        currentPage_$id--;
+                        renderPage_$id();
+                    };
+                };
+            
+                renderPage_$id();
+            </script>
+        """.trimIndent())
+
         if (sortable) {
             out.println("""
                 <script>
                     const sortTable = (tableId, colIndex) => {
                         const table = document.getElementById(tableId);
-                        const tbody = table.tBodies[0];
-                        const rows = Array.from(tbody.rows);
+
                         const asc = !table.asc;
                         
-                        rows.sort((a, b) => {
-                            const aText = a.cells[colIndex].textContent.trim();
-                            const bText = b.cells[colIndex].textContent.trim();
+                        allData_$id.sort((a, b) => {
+                            const aText = a.cells[colIndex];
+                            const bText = b.cells[colIndex];
                             
                             return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
                         });
                         
-                        rows.forEach((row) => {
-                            tbody.appendChild(row); 
-                        });
                         table.asc = asc;
+                        
+                        renderPage_$id();
                     }
                 </script>
             """.trimIndent())
         }
 
-        if (pageSize > 0) {
-            out.println("""
-                <div class="buttons">
-                    <button id="prevBtn_$id" onclick="prevPage_$id();">Назад</button>
-                    <button id="nextBtn_$id" onclick="nextPage_$id();">Вперёд</button>
-                </div>
-                <script>
-                    let currentPage_$id = 1;
-                    const pageSize_$id = $pageSize;
-                    const table_$id = document.getElementById('$id');
-                    const nextBtn_$id = document.getElementById('nextBtn_$id');
-                    const prevBtn_$id = document.getElementById('prevBtn_$id');
-                    const tbody_$id = table_$id.tBodies[0];
-                    const rows_$id = Array.from(tbody_$id.rows);
-                    
-                    const renderPage_$id = () => {
-                        const start = (currentPage_$id - 1) * pageSize_$id;
-                        const end = start + pageSize_$id;
-                        
-                        if (currentPage_$id === 1) {
-                            prevBtn_$id.disabled = true;
-                        } else prevBtn_$id.disabled = false;
-                        
-                        if (currentPage_$id * pageSize_$id >= rows_$id.length) {
-                            nextBtn_$id.disabled = true;
-                        } else nextBtn_$id.disabled = false;
-                        
-                        rows_$id.forEach((r, i) => {
-                            r.style.display = (i >= start && i < end) ? '' : 'none';
-                        });
-                    };
-                    
-                    const nextPage_$id = () => {
-                        if (currentPage_$id * pageSize_$id < rows_$id.length) {
-                            currentPage_$id++; 
-                            renderPage_$id();
-                        };
-                    };
-                    
-                    const prevPage_$id = () => {
-                        if (currentPage_$id > 1) {
-                            currentPage_$id--; 
-                            renderPage_$id();
-                        };
-                    };
-                    
-                    renderPage_$id();
-                </script>
-            """.trimIndent())
-        }
-        out.println("</div>")
         return EVAL_PAGE
     }
 }
