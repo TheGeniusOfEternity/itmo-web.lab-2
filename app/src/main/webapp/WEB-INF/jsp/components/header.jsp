@@ -10,6 +10,7 @@
     %>
   </title>
   <meta charset="UTF-8">
+  <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico">
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/main.css">
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/table.css">
 </head>

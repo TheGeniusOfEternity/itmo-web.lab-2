@@ -29,9 +29,4 @@ class MainController : HttpServlet() {
 
         request.getRequestDispatcher(path).forward(request, response)
     }
-
-    @Throws(ServletException::class, IOException::class)
-    override fun doPost(request: HttpServletRequest, response: HttpServletResponse) {
-        doGet(request, response)
-    }
 }

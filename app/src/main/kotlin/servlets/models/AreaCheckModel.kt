@@ -9,6 +9,7 @@ import java.io.PrintWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
+
 data class ShotResult(
     val x: Float?,
     val y: Float?,
@@ -28,7 +29,7 @@ class AreaCheckModel: HttpServlet() {
         fun validate(x: Float?, y: Float?, r: Float?): Boolean? {
             if (x == null || y == null || r == null) return null
             if (x > 0 && y > 0) return (x.pow(2) + y.pow(2)) <= r.pow(2) / 4
-            if (x <= 0 && y >= 0) return (x + y) <= r
+            if (x <= 0 && y >= 0) return (y <= x + r) && (x >= -r) && (y <= r)
             if (x >= 0 && y <= 0) return x <= r/2 && y >= -r
             return false
         }
@@ -41,6 +42,7 @@ class AreaCheckModel: HttpServlet() {
                 <!DOCTYPE html>
                 <html>
                     <head>
+                        <link rel="icon" href="${contextPath}/images/favicon.ico">
                         <link rel="stylesheet" type="text/css" href="${contextPath}/css/main.css">
                         <link rel="stylesheet" type="text/css" href="${contextPath}/css/result.css">
                         <title>Результат</title>
