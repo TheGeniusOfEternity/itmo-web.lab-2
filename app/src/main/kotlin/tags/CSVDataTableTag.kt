@@ -87,7 +87,7 @@ class CSVDataTableTag : BodyTagSupport() {
             val rowClass = if (classNames.isEmpty()) ""
                 else "class=\"${classNames.joinToString(" ")}\""
 
-            out.print("<tr$rowClass>")
+            out.print("<tr $rowClass>")
             for (col in row) {
                 out.println("""
                     <td>

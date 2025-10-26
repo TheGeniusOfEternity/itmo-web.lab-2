@@ -9,13 +9,20 @@ const rErrorText = document.getElementById("r-error")
 
 const svg = document.getElementById('svg-graph');
 
-const xValues = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
-
 let xValue = -2
 let yPrevValue = ""
 
 xInputs.forEach(checkbox => {
-  checkbox.addEventListener("click", () => checkInputs(checkbox))
+  checkbox.addEventListener("click", () => {
+    if (checkbox.checked) {
+      xValue = checkbox.value
+      xInputs.forEach((cb) => {
+        if (cb !== checkbox) {
+          cb.checked = false;
+        }
+      })
+    }
+  })
 })
 
 yInput.addEventListener("input", () => {
@@ -28,13 +35,7 @@ yInput.addEventListener("input", () => {
     yPrevValue = yInput.value
 })
 
-rInput.addEventListener("change", () => {
-  const scaledCoords = scaleByRadius(xValue, parseFloat(yInput.value))
-  findClosestPoint(scaledCoords.x)
-  yInput.value = scaledCoords.y
-})
-
-svg.addEventListener('click', function(e) {
+svg.addEventListener('click', (e) => {
 
   const pt = svg.createSVGPoint();
 
@@ -42,9 +43,9 @@ svg.addEventListener('click', function(e) {
   pt.y = e.clientY;
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
-  const scaledCoords = scaleByRadius(svgP.x - 150, 150 - svgP.y)
-  findClosestPoint(scaledCoords.x)
-  yInput.value = scaledCoords.y
+
+  xValue = ((svgP.x  - 150) * rInput.value / 120).toFixed(2)
+  yInput.value = ((150 - svgP.y) * rInput.value / 120).toFixed(2)
 
   sendRequest()
 });
@@ -83,44 +84,6 @@ const sendRequest = () => {
       })
       location.assign(`/main?${params}`)
   }
-}
-
-const checkInputs = (checkbox) => {
-  if (checkbox.checked) {
-    xValue = checkbox.value
-    xInputs.forEach((cb) => {
-      if (cb !== checkbox) {
-        cb.checked = false;
-      }
-    })
-  }
-}
-
-const scaleByRadius = (x, y) => {
-  return {
-    x: (x * rInput.value / 120).toFixed(2),
-    y: (y * rInput.value / 120).toFixed(2)
-  }
-}
-
-const findClosestPoint = (x) => {
-  let closestPoint = 0;
-  let minDiff = Infinity;
-
-  xValues.forEach(value => {
-    const diff = Math.abs(value - parseFloat(x));
-    if (diff < minDiff) {
-      minDiff = diff;
-      closestPoint = value;
-    }
-  });
-  xInputs.forEach(input => {
-    if (input.value === closestPoint.toString()) {
-      input.checked = true
-      checkInputs(input)
-    }
-  })
-  xValue = closestPoint
 }
 
 const addCircle = (x, y) => {

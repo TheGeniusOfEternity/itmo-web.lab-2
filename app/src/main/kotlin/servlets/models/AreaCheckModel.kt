@@ -96,7 +96,6 @@ class AreaCheckModel: HttpServlet() {
         val result = ShotResult(x, y, r, isHit, LocalDateTime.now())
         val sessionId = session.id
 
-        // Получаем или создаем Map для хранения результатов всех пользователей
         val context = servletContext
         @Suppress("UNCHECKED_CAST")
         var allUsersResults = context.getAttribute("allUsersShotResults") as? MutableMap<String, MutableList<ShotResult>>
@@ -106,20 +105,14 @@ class AreaCheckModel: HttpServlet() {
             context.setAttribute("allUsersShotResults", allUsersResults)
         }
 
-        // Получаем или создаем список результатов для конкретного пользователя
         var userResults = allUsersResults[sessionId]
         if (userResults == null) {
             userResults = mutableListOf()
             allUsersResults[sessionId] = userResults
         }
 
-        // Добавляем новый результат (ограничиваем количество, например, последние 20)
         userResults.add(result)
-        if (userResults.size > 20) {
-            userResults.removeAt(0)
-        }
 
-        // Также сохраняем ID сессии в саму сессию для удобства доступа в JSP
         session.setAttribute("userSessionId", sessionId)
     }
 }
