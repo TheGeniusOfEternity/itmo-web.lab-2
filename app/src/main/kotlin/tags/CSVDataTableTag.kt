@@ -77,14 +77,15 @@ class CSVDataTableTag : BodyTagSupport() {
 
         for (i in 1 until rows.size) {
             val row = rows[i]
-            var rowClass = " class=\""
+            val classNames = mutableListOf<String>()
 
-            rowClass += if (striped && i % 2 == 1) "striped-row " else " "
+            if (striped && i % 2 == 1) classNames.add("striped-row")
             when {
-                row.contains("true") -> rowClass += "hit"
-                row.contains("false") -> rowClass += "miss"
+                row.contains("true") -> classNames.add("hit")
+                row.contains("false") -> classNames.add("miss")
             }
-            rowClass += "\""
+            val rowClass = if (classNames.isEmpty()) ""
+                else "class=\"${classNames.joinToString(" ")}\""
 
             out.print("<tr$rowClass>")
             for (col in row) {
