@@ -34,11 +34,11 @@ class AreaCheckModel: HttpServlet() {
             return false
         }
 
-        fun sendHtml(x: Float?, y: Float?, r: Float?, isHit: Boolean?) {
+        fun sendHtml(shots: List<ShotResult>) {
             response.contentType = "text/html;charset=UTF-8"
             val out: PrintWriter = response.writer
             val contextPath: String = request.contextPath
-            val html = """
+            out.println("""
                 <!DOCTYPE html>
                 <html>
                     <head>
@@ -57,23 +57,32 @@ class AreaCheckModel: HttpServlet() {
                             <div>
                                 <h2>Результат проверки</h2>
                             </div>
-                            <div>
-                                <span>x</span>
-                                <span>y</span>
-                                <span>r</span>
-                                <span>Статус</span>
-                                <span>${x ?: "Параметр не был получен"}</span>
-                                <span>${y ?: "Параметр не был получен"}</span>
-                                <span>${r ?: "Параметр не был получен"}</span>
-                                <span> 
-                                ${
-                                    when (isHit) {
-                                        null -> "Неверный формат данных"
-                                        false -> "Промах"
-                                        else -> "Попадание"
-                                    }
-                                }
+                            <div class="table">
+            """.trimIndent())
+
+            shots.forEach { shot ->
+                out.println("""
+                    <div>
+                        <span>x</span>
+                        <span>y</span>
+                        <span>r</span>
+                        <span>Статус</span>
+                        <span>${shot.x ?: "Параметр не был получен"}</span>
+                        <span>${shot.y ?: "Параметр не был получен"}</span>
+                        <span>${shot.r ?: "Параметр не был получен"}</span>
+                        <span> 
+                        ${
+                            when (shot.isHit) {
+                                null -> "Неверный формат данных"
+                                false -> "Промах"
+                                else -> "Попадание"
+                            }
+                        }
                                 </span>
+                    </div>
+                """.trimIndent())
+            }
+            out.println("""
                             </div>
                             <div>
                                 <a href="$contextPath/main">Назад</a>
@@ -81,20 +90,23 @@ class AreaCheckModel: HttpServlet() {
                         </main>
                     </body>
                 </html>
-            """.trimIndent()
-            out.println(html)
+            """.trimIndent())
         }
 
-
-        val x = request.getParameter("x")?.toFloatOrNull()
+        val xValues = request.getParameterValues("x")
         val y = request.getParameter("y")?.toFloatOrNull()
         val r = request.getParameter("r")?.toFloatOrNull()
-        val isHit = validate(x, y, r)
-        saveResult(request.session, x, y, r, isHit)
-        sendHtml(x, y, r, isHit)
+        val results = mutableListOf<ShotResult>()
+        xValues.forEach{ xValue ->
+            val x = xValue.toFloatOrNull()
+            val isHit = validate(x, y, r)
+            val result = saveResult(request.session, x, y, r, isHit)
+            results.add(result)
+        }
+        sendHtml(results)
     }
 
-    private fun saveResult(session: HttpSession, x: Float?, y: Float?, r: Float?, isHit: Boolean?) {
+    private fun saveResult(session: HttpSession, x: Float?, y: Float?, r: Float?, isHit: Boolean?): ShotResult {
         val result = ShotResult(x, y, r, isHit, LocalDateTime.now())
         val sessionId = session.id
 
@@ -116,5 +128,6 @@ class AreaCheckModel: HttpServlet() {
         userResults.add(result)
 
         session.setAttribute("userSessionId", sessionId)
+        return result
     }
 }

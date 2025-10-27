@@ -11,17 +11,12 @@ import java.io.IOException
 class MainController : HttpServlet() {
     @Throws(ServletException::class, IOException::class)
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        val x = request.getParameter("x")
+        val xValues = request.getParameterValues("x")
         val y = request.getParameter("y")
         val r = request.getParameter("r")
         var path = "/WEB-INF/jsp/index.jsp"
 
-        if (x != null && y != null && r != null) {
-            path = "/area-check"
-            request.setAttribute("x", x)
-            request.setAttribute("y", y)
-            request.setAttribute("r", r)
-        }
+        if (xValues != null && y != null && r != null) path = "/area-check"
 
         request.setAttribute("username", "Сафин Максим Владиславович")
         request.setAttribute("group", "P3222")
