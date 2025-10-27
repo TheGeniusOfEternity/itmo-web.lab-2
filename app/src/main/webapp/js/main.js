@@ -7,16 +7,31 @@ const xErrorText = document.getElementById("x-error")
 const yErrorText = document.getElementById("y-error")
 const rErrorText = document.getElementById("r-error")
 
-
 const svg = document.getElementById('svg-graph');
 const hits = localStorage.getItem("hits")
 
-let xValue = -2
+const temp = localStorage.getItem("temp-input")
+
+let xValues= []
 let yPrevValue = ""
 
 if (hits === null) svg.classList.add("rendered")
 
 window.onload = () => {
+  if (temp !== null) {
+    const data = JSON.parse(temp)
+    rInput.value = data.r
+    yInput.value = data.y
+    xValues = data.x
+    xInputs.forEach(checkbox => {
+      xValues.forEach(xValue => {
+        if (checkbox.value === xValue) {
+          checkbox.checked = true
+        }
+      })
+    })
+  }
+
   if (hits !== null) {
     const data = JSON.parse(hits)
     svg.classList.remove("rendered")
@@ -47,14 +62,14 @@ window.onload = () => {
 xInputs.forEach(checkbox => {
   checkbox.addEventListener("click", () => {
     if (checkbox.checked) {
-      xValue = checkbox.value
-      xInputs.forEach((cb) => {
-        if (cb !== checkbox) {
-          cb.checked = false;
-        }
-      })
-    }
+      xValues.push(checkbox.value)
+    } else xValues = xValues.filter(value => value !== checkbox.value)
+    cacheForm()
   })
+})
+
+rInput.addEventListener("change", () => {
+  cacheForm()
 })
 
 yInput.addEventListener("input", () => {
@@ -65,6 +80,7 @@ yInput.addEventListener("input", () => {
   if ((isNaN(num) || -3 >= num || num >= 3) && !yInput.value.match(/^-?$/))
     yInput.value = yPrevValue
     yPrevValue = yInput.value
+    cacheForm()
 })
 
 svg.addEventListener('click', (e) => {
@@ -76,10 +92,10 @@ svg.addEventListener('click', (e) => {
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
 
-  xValue = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
+  const x = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
   yInput.value = ((150 - svgP.y) * rInput.value / 120).toFixed(2)
 
-  sendRequest()
+  sendRequest(x)
 });
 
 form.addEventListener("submit", (e) => {
@@ -87,42 +103,56 @@ form.addEventListener("submit", (e) => {
   sendRequest()
 })
 
-const sendRequest = () => {
+const cacheForm = () => {
+  localStorage.setItem("temp-input", JSON.stringify({
+    x: xValues,
+    y: yInput.value,
+    r: rInput.value
+  }))
+}
 
-  const x = xValue
+const sendRequest = (x) => {
+  cacheForm()
+
   const y = yInput.value
   const r = rInput.value
 
   const errorText = validate(x, y, r)
-
   switch (errorText.input) {
     case "x":
       xErrorText.innerHTML = errorText.text
-      xErrorText.classList.add("show")
+      xErrorText.classList.add("show-error")
       break
     case "y":
       yErrorText.innerHTML = errorText.text
-      yErrorText.classList.add("show")
+      yErrorText.classList.add("show-error")
       break
     case "r":
       rErrorText.innerHTML = errorText.text
-      rErrorText.classList.add("show")
+      rErrorText.classList.add("show-error")
       break
     default:
-      const params = new URLSearchParams({
-        x: x.toString(),
-        y: y.toString(),
-        r: r.toString(),
-      })
-      location.assign(`/main?${params}`)
+      const params = new URLSearchParams();
+      if (x) params.append('x', x.toString());
+      else xValues.forEach(value => params.append('x', value.toString()));
+
+      params.append('y', y.toString());
+      params.append('r', r.toString());
+
+      location.assign(`/main?${params}`);
   }
 }
 
 const validate = (x, y, r) => {
-  if (!Number.isFinite(Number(x)))
+  if (x && !Number.isFinite(Number(x)))
     return {
       input: "x",
       text: "Параметр х не является числом"
+    }
+  if (xValues.length === 0 && !x)
+    return {
+      input: "x",
+      text: "Параметр х не задан"
     }
   if (!Number.isFinite(Number(y)))
     return {
