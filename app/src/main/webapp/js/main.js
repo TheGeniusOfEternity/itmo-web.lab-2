@@ -7,9 +7,10 @@ const xErrorText = document.getElementById("x-error")
 const yErrorText = document.getElementById("y-error")
 const rErrorText = document.getElementById("r-error")
 
-
 const svg = document.getElementById('svg-graph');
 const hits = localStorage.getItem("hits")
+
+const temp = localStorage.getItem("temp-input")
 
 let xValues= []
 let yPrevValue = ""
@@ -17,6 +18,20 @@ let yPrevValue = ""
 if (hits === null) svg.classList.add("rendered")
 
 window.onload = () => {
+  if (temp !== null) {
+    const data = JSON.parse(temp)
+    rInput.value = data.r
+    yInput.value = data.y
+    xValues = data.x
+    xInputs.forEach(checkbox => {
+      xValues.forEach(xValue => {
+        if (checkbox.value === xValue) {
+          checkbox.checked = true
+        }
+      })
+    })
+  }
+
   if (hits !== null) {
     const data = JSON.parse(hits)
     svg.classList.remove("rendered")
@@ -82,12 +97,17 @@ form.addEventListener("submit", (e) => {
   sendRequest()
 })
 
-const sendRequest = (x = null) => {
+const sendRequest = (x) => {
+  localStorage.setItem("temp-input", JSON.stringify({
+    x: xValues,
+    y: yInput.value,
+    r: rInput.value
+  }))
+
   const y = yInput.value
   const r = rInput.value
 
   const errorText = validate(x, y, r)
-
   switch (errorText.input) {
     case "x":
       xErrorText.innerHTML = errorText.text
@@ -103,7 +123,7 @@ const sendRequest = (x = null) => {
       break
     default:
       const params = new URLSearchParams();
-      if (x !== null) params.append('x', x.toString());
+      if (x) params.append('x', x.toString());
       else xValues.forEach(value => params.append('x', value.toString()));
 
       params.append('y', y.toString());
@@ -114,12 +134,12 @@ const sendRequest = (x = null) => {
 }
 
 const validate = (x, y, r) => {
-  if (x !== null && !Number.isFinite(Number(x)))
+  if (x && !Number.isFinite(Number(x)))
     return {
       input: "x",
       text: "Параметр х не является числом"
     }
-  else if (xValues.length === 0)
+  if (xValues.length === 0 && !x)
     return {
       input: "x",
       text: "Параметр х не задан"
