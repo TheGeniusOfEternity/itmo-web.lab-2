@@ -11,7 +11,7 @@ const rErrorText = document.getElementById("r-error")
 const svg = document.getElementById('svg-graph');
 const hits = localStorage.getItem("hits")
 
-let xValue = -2
+let xValues= []
 let yPrevValue = ""
 
 if (hits === null) svg.classList.add("rendered")
@@ -47,13 +47,8 @@ window.onload = () => {
 xInputs.forEach(checkbox => {
   checkbox.addEventListener("click", () => {
     if (checkbox.checked) {
-      xValue = checkbox.value
-      xInputs.forEach((cb) => {
-        if (cb !== checkbox) {
-          cb.checked = false;
-        }
-      })
-    }
+      xValues.push(checkbox.value)
+    } else xValues = xValues.filter(value => value !== checkbox.value)
   })
 })
 
@@ -76,10 +71,10 @@ svg.addEventListener('click', (e) => {
 
   const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
 
-  xValue = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
+  const x = ((svgP.x - 150) * rInput.value / 120).toFixed(2)
   yInput.value = ((150 - svgP.y) * rInput.value / 120).toFixed(2)
 
-  sendRequest()
+  sendRequest(x)
 });
 
 form.addEventListener("submit", (e) => {
@@ -87,13 +82,13 @@ form.addEventListener("submit", (e) => {
   sendRequest()
 })
 
-const sendRequest = () => {
-
-  const x = xValue
+const sendRequest = (x = null) => {
   const y = yInput.value
   const r = rInput.value
 
-  const errorText = validate(x, y, r)
+  const errorText = x !== null
+    ? validate(x, y, r)
+    : validate(0, y, r)
 
   switch (errorText.input) {
     case "x":
@@ -109,12 +104,14 @@ const sendRequest = () => {
       rErrorText.classList.add("show")
       break
     default:
-      const params = new URLSearchParams({
-        x: x.toString(),
-        y: y.toString(),
-        r: r.toString(),
-      })
-      location.assign(`/main?${params}`)
+      const params = new URLSearchParams();
+      if (x !== null) params.append('x', x.toString());
+      else xValues.forEach(value => params.append('x', value.toString()));
+
+      params.append('y', y.toString());
+      params.append('r', r.toString());
+
+      location.assign(`/main?${params.toString()}`);
   }
 }
 

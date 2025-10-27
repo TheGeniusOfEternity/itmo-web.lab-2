@@ -99,7 +99,7 @@
             <h4>Значение Х</h4>
             <div class="param-group">
               <div class="param-checkbox">
-                <input value="-2" id="x-2" type="checkbox" name="x-input" checked>
+                <input value="-2" id="x-2" type="checkbox" name="x-input">
                 <label for="x-2">-2</label>
               </div>
               <div class="param-checkbox">
