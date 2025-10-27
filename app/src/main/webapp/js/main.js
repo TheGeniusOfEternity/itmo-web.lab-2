@@ -86,22 +86,20 @@ const sendRequest = (x = null) => {
   const y = yInput.value
   const r = rInput.value
 
-  const errorText = x !== null
-    ? validate(x, y, r)
-    : validate(0, y, r)
+  const errorText = validate(x, y, r)
 
   switch (errorText.input) {
     case "x":
       xErrorText.innerHTML = errorText.text
-      xErrorText.classList.add("show")
+      xErrorText.classList.add("show-error")
       break
     case "y":
       yErrorText.innerHTML = errorText.text
-      yErrorText.classList.add("show")
+      yErrorText.classList.add("show-error")
       break
     case "r":
       rErrorText.innerHTML = errorText.text
-      rErrorText.classList.add("show")
+      rErrorText.classList.add("show-error")
       break
     default:
       const params = new URLSearchParams();
@@ -116,10 +114,15 @@ const sendRequest = (x = null) => {
 }
 
 const validate = (x, y, r) => {
-  if (!Number.isFinite(Number(x)))
+  if (x !== null && !Number.isFinite(Number(x)))
     return {
       input: "x",
       text: "Параметр х не является числом"
+    }
+  else if (xValues.length === 0)
+    return {
+      input: "x",
+      text: "Параметр х не задан"
     }
   if (!Number.isFinite(Number(y)))
     return {
