@@ -29,7 +29,7 @@ html {
 
             div.table {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
                 max-height: 52vh;
                 overflow: scroll;
