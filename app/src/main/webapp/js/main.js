@@ -139,7 +139,7 @@ const sendRequest = (x) => {
       params.append('y', y.toString());
       params.append('r', r.toString());
 
-      location.assign(`/main?${params.toString()}`);
+      location.assign(`/main?${params}`);
   }
 }
 
