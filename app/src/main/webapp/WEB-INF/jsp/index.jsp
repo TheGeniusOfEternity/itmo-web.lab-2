@@ -140,7 +140,7 @@
           <div class="input-block">
             <div class="param-text">
               <label for="y">Значение Y</label>
-              <input id="y" value="0" required name="y-input">
+              <input id="y" required name="y-input">
             </div>
             <p id="y-error" class="error-text"></p>
           </div>

@@ -64,7 +64,12 @@ xInputs.forEach(checkbox => {
     if (checkbox.checked) {
       xValues.push(checkbox.value)
     } else xValues = xValues.filter(value => value !== checkbox.value)
+    cacheForm()
   })
+})
+
+rInput.addEventListener("change", () => {
+  cacheForm()
 })
 
 yInput.addEventListener("input", () => {
@@ -75,6 +80,7 @@ yInput.addEventListener("input", () => {
   if ((isNaN(num) || -3 >= num || num >= 3) && !yInput.value.match(/^-?$/))
     yInput.value = yPrevValue
     yPrevValue = yInput.value
+    cacheForm()
 })
 
 svg.addEventListener('click', (e) => {
@@ -97,12 +103,16 @@ form.addEventListener("submit", (e) => {
   sendRequest()
 })
 
-const sendRequest = (x) => {
+const cacheForm = () => {
   localStorage.setItem("temp-input", JSON.stringify({
     x: xValues,
     y: yInput.value,
     r: rInput.value
   }))
+}
+
+const sendRequest = (x) => {
+  cacheForm()
 
   const y = yInput.value
   const r = rInput.value
