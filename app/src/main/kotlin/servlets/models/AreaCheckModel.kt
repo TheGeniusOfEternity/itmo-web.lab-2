@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import java.io.PrintWriter
+import java.io.Serializable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
@@ -16,7 +17,7 @@ data class ShotResult(
     val r: Float?,
     val isHit: Boolean?,
     val timestamp: LocalDateTime = LocalDateTime.now()
-) {
+): Serializable {
     fun getFormattedTimestamp(): String {
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
         return timestamp.format(formatter)
