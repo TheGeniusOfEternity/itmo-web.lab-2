@@ -1,4 +1,4 @@
-<%@ page import="servlets.models.ShotResult" %>
+<%@ page import="beans.ShotResult" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %>

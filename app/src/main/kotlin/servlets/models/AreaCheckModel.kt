@@ -1,5 +1,6 @@
 package servlets.models
 
+import beans.ShotResult
 import jakarta.servlet.annotation.WebServlet
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
@@ -7,21 +8,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import java.io.PrintWriter
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlin.math.pow
-
-data class ShotResult(
-    val x: Float?,
-    val y: Float?,
-    val r: Float?,
-    val isHit: Boolean?,
-    val timestamp: LocalDateTime = LocalDateTime.now()
-) {
-    fun getFormattedTimestamp(): String {
-        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
-        return timestamp.format(formatter)
-    }
-}
 
 @WebServlet(name = "AreaCheckServlet", urlPatterns = ["/area-check"])
 class AreaCheckModel: HttpServlet() {
