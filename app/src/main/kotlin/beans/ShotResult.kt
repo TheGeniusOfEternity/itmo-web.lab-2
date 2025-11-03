@@ -11,7 +11,7 @@ data class ShotResult(
     val y: Float?,
     val r: Float?,
     val isHit: Boolean?,
-    var timestamp: LocalDateTime = LocalDateTime.now()
+    @Transient var timestamp: LocalDateTime = LocalDateTime.now()
 ): Serializable {
 
     private fun writeObject(out: ObjectOutputStream) {
